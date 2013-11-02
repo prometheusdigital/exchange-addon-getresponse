@@ -1,4 +1,4 @@
-exchange-addon-getresponse
+GetResponse Addon for Exchange
 ==========================
 
-Integrates GetResponse into the iThemes Exchange plugin.
+**Integrates GetResponse into the iThemes Exchange plugin.**
