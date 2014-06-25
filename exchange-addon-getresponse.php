@@ -12,14 +12,16 @@
  * Plugin Name:  iThemes Exchange - GetResponse Add-on
  * Plugin URI:   http://ithemes.com/exchange/getresponse/
  * Description:  Integrates GetResponse into the iThemes Exchange plugin.
- * Version:      1.0.4
- * Author:       Thomas Griffin
- * Author URI:   http://thomasgriffinmedia.com/
+ * Version:      1.0.5
+ * Author:       iThemes
+ * Author URI:   http://ithemes.com/exchange/
  * Text Domain:  LION
- * Contributors: griffinjt
+ * Contributors: ithemes, griffinjt
  * License:      GPL-2.0+
  * License URI:  http://www.gnu.org/licenses/gpl-2.0.txt
  * Domain Path:  /lang
+ *
+ * This add-on was originally developed by Thomas Griffin <http://thomasgriffinmedia.com/>
  */
 
 // If this file is called directly, abort.
@@ -66,8 +68,8 @@ function tgm_exchange_getresponse_register() {
         $options = array(
             'name'              => __( 'GetResponse', 'tgm-exchange-getresponse' ),
             'description'       => __( 'Adds a GetResponse optin checkbox to the user registration form.', 'tgm-exchange-getresponse' ),
-            'author'            => 'Thomas Griffin',
-            'author_url'        => 'http://thomasgriffinmedia.com/',
+            'author'            => 'iThemes',
+            'author_url'        => 'http://ithemes.com/exchange/',
             'icon'              => ITUtility::get_url_from_file( dirname( __FILE__ ) . '/lib/images/getresponse50px.png' ),
             'file'              => dirname( __FILE__ ) . '/class-exchange-addon-getresponse.php',
             'category'          => 'email',
