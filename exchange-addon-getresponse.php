@@ -12,7 +12,7 @@
  * Plugin Name:  iThemes Exchange - GetResponse Add-on
  * Plugin URI:   http://ithemes.com/exchange/getresponse/
  * Description:  Integrates GetResponse into the iThemes Exchange plugin.
- * Version:      1.0.5
+ * Version:      1.0.6
  * Author:       iThemes
  * Author URI:   http://ithemes.com/exchange/
  * Text Domain:  LION
