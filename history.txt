@@ -15,3 +15,5 @@
 	Updating ownership information
 1.0.6 - 2014-09-19 - Glenn Ansley
 	Removing README.md
+1.0.7 - 2014-09-19 - Glenn Ansley
+	Adding iThemes Package to plugin header info

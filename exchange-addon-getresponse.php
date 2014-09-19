@@ -12,7 +12,7 @@
  * Plugin Name:  iThemes Exchange - GetResponse Add-on
  * Plugin URI:   http://ithemes.com/exchange/getresponse/
  * Description:  Integrates GetResponse into the iThemes Exchange plugin.
- * Version:      1.0.6
+ * Version:      1.0.7
  * Author:       iThemes
  * Author URI:   http://ithemes.com/exchange/
  * Text Domain:  LION
@@ -20,6 +20,7 @@
  * License:      GPL-2.0+
  * License URI:  http://www.gnu.org/licenses/gpl-2.0.txt
  * Domain Path:  /lang
+ * iThemes Package: exchange-addon-getresponse
  *
  * This add-on was originally developed by Thomas Griffin <http://thomasgriffinmedia.com/>
  */
