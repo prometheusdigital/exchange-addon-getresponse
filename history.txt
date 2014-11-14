@@ -17,3 +17,6 @@
 	Removing README.md
 1.0.7 - 2014-09-19 - Glenn Ansley
 	Adding iThemes Package to plugin header info
+1.0.8 - 2014-11-14 - Packaging Bot (lib/updater)
+	Enhancement: Reduced caching to allow updates to appear more quickly.
+	Enhancement: Authenticating users now uses the new authentication system.
