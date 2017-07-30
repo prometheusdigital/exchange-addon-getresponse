@@ -1,6 +1,6 @@
 <?php
 /**
- * iThemes Exchange - GetResponse Add-on class.
+ * ExchangeWP - GetResponse Add-on class.
  *
  * @package   TGM_Exchange_GetResponse
  * @author    Thomas Griffin
@@ -31,7 +31,7 @@ class TGM_Exchange_GetResponse {
      *
      * @var string
      */
-    public $plugin_name = 'iThemes Exchange - GetResponse Add-on';
+    public $plugin_name = 'ExchangeWP - GetResponse Add-on';
 
     /**
      * Unique plugin identifier.
@@ -167,7 +167,7 @@ class TGM_Exchange_GetResponse {
         ?>
         <div id="tgm-exchange-getresponse-nag" class="it-exchange-nag">
             <?php
-            printf( __( 'To use the GetResponse add-on for iThemes Exchange, you must be using iThemes Exchange version 1.0.3 or higher. <a href="%s">Please update now</a>.', 'LION' ), admin_url( 'update-core.php' ) );
+            printf( __( 'To use the GetResponse add-on for ExchangeWP, you must be using ExchangeWP version 1.0.3 or higher. <a href="%s">Please update now</a>.', 'LION' ), admin_url( 'update-core.php' ) );
             ?>
         </div>
         <?php
@@ -236,9 +236,31 @@ class TGM_Exchange_GetResponse {
                 <form class="tgm-exchange-getresponse-form" action="admin.php?page=it-exchange-addons&add-on-settings=getresponse" method="post">
                     <?php wp_nonce_field( 'tgm-exchange-getresponse-form' ); ?>
                     <input type="hidden" name="tgm-exchange-getresponse-form" value="1" />
-
+                    <?php
+                       $exchangewp_campaignmonitor_options = get_option( 'it-storage-exchange_addon_getresponse' );
+                       $license = $exchangewp_campaignmonitor_options['exchange_getresponse_license_key'];
+                       $exstatus = trim( get_option( 'exchange_getresponse_license_status' ) );
+                    ?>
                     <table class="form-table">
                         <tbody>
+                          <tr valign="middle">
+                                <th scope="row">
+                                    <label class="description" for="exchange_getresponse_license_key"><strong><?php _e('Enter your ExchangeWP Get Response license key'); ?></strong></label>
+                                </th>
+                                <td>
+                                    <input id="tgm-exchange-getresponse_license" name="_tgm_exchange_getresponse[getresponse-license-key]" type="text" value="<?php echo $this->get_setting( 'getresponse-license-key' ); ?>" placeholder="<?php esc_attr_e( 'Enter your ExchangeWP License Key here.', 'LION' ); ?>" />
+                                    <span>
+                                        <?php if( $exstatus !== false && $exstatus == 'valid' ) { ?>
+                                            <span style="color:green;"><?php _e('active'); ?></span>
+                          			            <?php wp_nonce_field( 'exchange_getresponse_nonce', 'exchange_getresponse_nonce' ); ?>
+                          			            <input type="submit" class="button-secondary" name="exchange_getresponse_license_deactivate" value="<?php _e('Deactivate License'); ?>"/>
+                                        <?php } else {
+                                            wp_nonce_field( 'exchange_getresponse_nonce', 'exchange_getresponse_nonce' ); ?>
+                                            <input type="submit" class="button-secondary" name="exchange_getresponse_license_activate" value="<?php _e('Activate License'); ?>"/>
+                                        <?php } ?>
+                                    </span>
+                                </td>
+                            </tr>
                             <tr valign="middle">
                                 <th scope="row">
                                     <label for="tgm-exchange-getresponse-api-key"><strong><?php _e( 'GetResponse API Key', 'LION' ); ?></strong></label>
@@ -304,6 +326,7 @@ class TGM_Exchange_GetResponse {
         $settings     = get_option( 'tgm_exchange_getresponse' );
         $new_settings = stripslashes_deep( $_POST['_tgm_exchange_getresponse'] );
 
+        $settings['getresponse-license-key'] = isset( $new_settings['getresponse-license-key'] ) ? trim( $new_settings['getresponse-license-key'] ) : $settings['getresponse-license-key'];
         $settings['getresponse-api-key'] = isset( $new_settings['getresponse-api-key'] ) ? trim( $new_settings['getresponse-api-key'] ) : $settings['getresponse-api-key'];
         $settings['getresponse-list']    = isset( $new_settings['getresponse-list'] ) ? esc_attr( $new_settings['getresponse-list'] ) : $settings['getresponse-list'];
         $settings['getresponse-label']   = isset( $new_settings['getresponse-label'] ) ? esc_html( $new_settings['getresponse-label'] ) : $settings['getresponse-label'];
@@ -311,6 +334,146 @@ class TGM_Exchange_GetResponse {
 
         // Save the settings and set flags.
         update_option( 'tgm_exchange_getresponse', $settings );
+
+        if( isset( $_POST['exchange_getresponse_license_activate'] ) ) {
+
+  		    // run a quick security check
+  		    if( ! check_admin_referer( 'exchange_getresponse_nonce', 'exchange_getresponse_nonce' ) )
+  			    return; // get out if we didn't click the Activate button
+
+  		    // retrieve the license from the database
+  		    // $license = trim( get_option( 'exchange_getresponse_license_key' ) );
+  		    $exchangewp_getresponse_options = get_option( 'tgm_exchange_getresponse' );
+  		    $license = trim( $exchangewp_getresponse_options['getresponse-license-key'] );
+
+  		    // data to send in our API request
+  		    $api_params = array(
+  			    'edd_action' => 'activate_license',
+  			    'license'    => $license,
+  			    'item_name'  => urlencode( 'get-response' ), // the name of our product in EDD
+  			    'url'        => home_url()
+  		    );
+
+  		    // Call the custom API.
+  		    $response = wp_remote_post( 'https://exchangewp.com', array( 'timeout' => 15, 'sslverify' => false, 'body' => $api_params ) );
+
+  		    // make sure the response came back okay
+  		    if ( is_wp_error( $response ) || 200 !== wp_remote_retrieve_response_code( $response ) ) {
+
+  			    if ( is_wp_error( $response ) ) {
+  				    $message = $response->get_error_message();
+  			    } else {
+  				    $message = __( 'An error occurred, please try again.' );
+  			    }
+
+  		    } else {
+
+  			    $license_data = json_decode( wp_remote_retrieve_body( $response ) );
+
+  			    if ( false === $license_data->success ) {
+
+  				    switch( $license_data->error ) {
+
+  					    case 'expired' :
+
+  						    $message = sprintf(
+  							    __( 'Your license key expired on %s.' ),
+  							    date_i18n( get_option( 'date_format' ), strtotime( $license_data->expires, current_time( 'timestamp' ) ) )
+  						    );
+  						    break;
+
+  					    case 'revoked' :
+
+  						    $message = __( 'Your license key has been disabled.' );
+  						    break;
+
+  					    case 'missing' :
+
+  						    $message = __( 'Invalid license.' );
+  						    break;
+
+  					    case 'invalid' :
+  					    case 'site_inactive' :
+
+  						    $message = __( 'Your license is not active for this URL.' );
+  						    break;
+
+  					    case 'item_name_mismatch' :
+
+  						    $message = sprintf( __( 'This appears to be an invalid license key for %s.' ), 'getresponse' );
+  						    break;
+
+  					    case 'no_activations_left':
+
+  						    $message = __( 'Your license key has reached its activation limit.' );
+  						    break;
+
+  					    default :
+
+  						    $message = __( 'An error occurred, please try again.' );
+  						    break;
+  				    }
+
+  			    }
+
+  		    }
+
+  		    // Check if anything passed on a message constituting a failure
+  		    if ( ! empty( $message ) ) {
+  			    $base_url = admin_url( 'admin.php?page=' . 'it-exchange-addons&add-on-settings=getresponse' );
+  			    $redirect = add_query_arg( array( 'sl_activation' => 'false', 'message' => urlencode( $message ) ), $base_url );
+
+  			    wp_redirect( $redirect );
+  			    exit();
+  		    }
+
+  		    //$license_data->license will be either "valid" or "invalid"
+  		    update_option( 'exchange_getresponse_license_status', $license_data->license );
+
+  	    }
+
+  	    // deactivate here
+  	    // listen for our activate button to be clicked
+  	    if( isset( $_POST['exchange_getresponse_license_deactivate'] ) ) {
+
+  		    // run a quick security check
+  		    if( ! check_admin_referer( 'exchange_getresponse_nonce', 'exchange_getresponse_nonce' ) )
+  			    return; // get out if we didn't click the Activate button
+
+  		    $exchangewp_getresponse_options = get_option( 'tgm_exchange_getresponse' );
+  		    $license = $exchangewp_getresponse_options['getresponse-license-key'];
+
+
+  		    // data to send in our API request
+  		    $api_params = array(
+  			    'edd_action' => 'deactivate_license',
+  			    'license'    => $license,
+  			    'item_name'  => urlencode( 'get-response' ), // the name of our product in EDD
+  			    'url'        => home_url()
+  		    );
+  		    // Call the custom API.
+  		    $response = wp_remote_post( 'https://exchangewp.com', array( 'timeout' => 15, 'sslverify' => false, 'body' => $api_params ) );
+
+  		    // make sure the response came back okay
+  		    if ( is_wp_error( $response ) || 200 !== wp_remote_retrieve_response_code( $response ) ) {
+
+  			    if ( is_wp_error( $response ) ) {
+  				    $message = $response->get_error_message();
+  			    } else {
+  				    $message = __( 'An error occurred, please try again.' );
+  			    }
+
+  		    }
+
+  		    // decode the license data
+  		    $license_data = json_decode( wp_remote_retrieve_body( $response ) );
+  		    // $license_data->license will be either "deactivated" or "failed"
+  		    if( $license_data->license == 'deactivated' ) {
+  			    delete_option( 'exchange_getresponse_license_status' );
+  		    }
+
+  	    }
+
         return $this->saved = true;
 
     }
