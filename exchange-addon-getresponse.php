@@ -77,8 +77,8 @@ function exchange_getresponse_plugin_updater() {
  			'beta'		  	=> false
  		)
  	);
-  var_dump($edd_updater);
-	die();
+  // var_dump($edd_updater);
+	// die();
 
  }
 
