@@ -12,7 +12,7 @@
  * Plugin Name:  ExchangeWP - GetResponse Add-on
  * Plugin URI:   https://exchangewp.com/downloads/getresponse/
  * Description:  Integrates GetResponse into the ExchangeWP plugin.
- * Version:      1.0.11
+ * Version:      0.0.1
  * Author:       ExchangeWP
  * Author URI:   https://exchangewp.com/
  * Text Domain:  LION
@@ -40,9 +40,9 @@ function exchange_getresponse_plugin_updater() {
 		$license = $license_key['exchange_license'];
 
 		$edd_updater = new EDD_SL_Plugin_Updater( 'https://exchangewp.com', __FILE__, array(
-				'version' 		=> '1.9.8', 				// current version number
+				'version' 		=> '0.0.1', 				// current version number
 				'license' 		=> $license, 		// license key (used get_option above to retrieve from DB)
-				'item_name' 	=> 'get-response', 	  // name of this plugin
+				'item_name' 	=> urlencode('GetResponse'), 	  // name of this plugin
 				'author' 	  	=> 'ExchangeWP',    // author of this plugin
 				'url'       	=> home_url(),
 				'wp_override' => true,
